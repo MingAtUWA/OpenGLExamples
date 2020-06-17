@@ -125,6 +125,7 @@ int GlfwApp::run(int wd, int ht)
 
 int GlfwApp::resize(int wd, int ht)
 {
+    glViewport(0, 0, wd, ht);
     return 0;
 }
 

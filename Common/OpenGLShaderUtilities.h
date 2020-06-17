@@ -117,7 +117,7 @@ protected:
     struct ShaderPointer
     {
         OpenGLShader *shader;
-        // whether the shader is internally allocated
+        // whether the shader is allocated on heap
         bool is_internal;
         inline void init() { shader = nullptr; is_internal = false; }
         inline void clear()
@@ -170,12 +170,6 @@ public:
             return false;
         }
 
-        shader_vert.init();
-        shader_frag.init();
-        shader_geo.init();
-        shader_tc.init();
-        shader_eva.init();
-        shader_comp.init();
         return true;
     }
     // Initialize vertex and fragment shaders from files
@@ -189,18 +183,14 @@ public:
     bool add_shader(OpenGLShader &shader);
     bool add_shader_from_code(ShaderType type, const char* code);
     inline bool add_shader_from_code(ShaderType type, const std::string &code)
-    {
-        return add_shader_from_code(type, code.c_str());
-    }
+    { return add_shader_from_code(type, code.c_str()); }
     bool add_shader_from_file(ShaderType type, const char *filename);
     inline bool add_shader_from_file(ShaderType type, const std::string &filename)
-    {
-        return add_shader_from_file(type, filename.c_str());
-    }
+    { return add_shader_from_file(type, filename.c_str()); }
     
     inline void del_shader(ShaderType type)
     {
-        if (type < OpenGLShader::type_num)
+        if (type > 0 && type < OpenGLShader::type_num)
             shader_ptr[type].clear();
     }
     inline void del_all_shaders()

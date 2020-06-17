@@ -87,31 +87,34 @@ void OpenGLShader::get_code(std::string& code) const
 
 bool OpenGLShader::compile(const char* code)
 {
-    if (code && strlen(code))
+    if (!code)
     {
-        glShaderSource(shader_id, 1, &code, nullptr);
-        glCompileShader(shader_id);
-        // get compilation status
-        GLint comp_res = 0;
-        glGetShaderiv(shader_id, GL_COMPILE_STATUS, &comp_res);
-        compiled_already = (comp_res != 0);
-        // compilation error, output msg
-        if (!compiled_already)
-        {
-            // print compilation info log
-            GLint info_log_len = 0;
-            glGetShaderiv(shader_id, GL_INFO_LOG_LENGTH, &info_log_len);
-            if (info_log_len > 0)
-            {
-                std::vector<char> log_buffer(info_log_len+1);
-                glGetShaderInfoLog(shader_id, info_log_len, nullptr, &log_buffer[0]);
-                log_buffer[info_log_len] = '\0';
-                log = &log_buffer[0];
-            }
-        }
-        return true;
+        std::cout << "OpenGLShader: code is empty.\n";
+        return false;
     }
-    return false; // not valide code
+
+    glShaderSource(shader_id, 1, &code, nullptr);
+    glCompileShader(shader_id);
+    // get compilation status
+    GLint comp_res = 0;
+    glGetShaderiv(shader_id, GL_COMPILE_STATUS, &comp_res);
+    compiled_already = (comp_res != 0);
+    // compilation error, output msg
+    if (!compiled_already)
+    {
+        // print compilation info log
+        GLint info_log_len = 0;
+        glGetShaderiv(shader_id, GL_INFO_LOG_LENGTH, &info_log_len);
+        if (info_log_len > 0)
+        {
+            std::vector<char> log_buffer(info_log_len+1);
+            glGetShaderInfoLog(shader_id, info_log_len, nullptr, &log_buffer[0]);
+            log_buffer[info_log_len] = '\0';
+            log = &log_buffer[0];
+            return false;
+        }
+    }
+    return true;
 }
 
 bool OpenGLShader::compile_code(const char* code, ShaderType type)
@@ -128,7 +131,7 @@ bool OpenGLShader::compile_code(const char* code, ShaderType type)
             << "\nProblematic shader code:\n"
             << code << "\n";
     }
-
+    std::cout << "OpenGLShader: code is empty.\n";
     return false;
 }
 
@@ -137,31 +140,40 @@ bool OpenGLShader::compile_file(const char* filename, ShaderType type)
     if (!create(type))
         return false;
     
-    if (filename && strlen(filename))
+    if (!filename || strlen(filename) == 0)
     {
-        std::fstream file(filename, std::ios::in | std::ios::binary);
-        // get file size
-        file.seekg(0, std::ios::end);
-        size_t file_size = file.tellg();
-        file.seekg(0, std::ios::beg);
-        // read in code
-        std::vector<char> code_buffer(file_size+1);
-        file.read(&code_buffer[0], file_size);
-        file.close();
-        code_buffer[file_size] = '\0';
-        compile(&code_buffer[0]);
-        if (!compiled_already)
-        {
-            std::cout << "OpenGLShader: "
-                << get_type_name() << " shader compilation error:\n"
-                << log
-                << "\nShader file path:\n"
-                << filename
-                << "\nProblematic shader code:\n"
-                << &code_buffer[0] << "\n";
-            return false;
-        }
+        std::cout << "OpenGLShader: Filename is empty.\n";
+        return false;
     }
+
+    std::fstream file(filename, std::ios::in | std::ios::binary);
+    if (!file.is_open())
+    {
+        std::cout << "OpenGLShader: Can't open file " << filename << ".\n";
+        return false;
+    }
+    // get file size
+    file.seekg(0, std::ios::end);
+    size_t file_size = file.tellg();
+    file.seekg(0, std::ios::beg);
+    // read in code
+    std::vector<char> code_buffer(file_size+1);
+    file.read(&code_buffer[0], file_size);
+    file.close();
+    code_buffer[file_size] = '\0';
+    compile(&code_buffer[0]);
+    if (!compiled_already)
+    {
+        std::cout << "OpenGLShader: "
+            << get_type_name() << " shader compilation error:\n"
+            << log
+            << "\nShader file path:\n"
+            << filename
+            << "\nProblematic shader code:\n"
+            << &code_buffer[0] << "\n";
+        return false;
+    }
+
     return true;
 }
 
@@ -170,7 +182,12 @@ bool OpenGLShader::compile_file(const char* filename, ShaderType type)
 OpenGLShaderProgram::OpenGLShaderProgram():
     program_id(0), linked_already(false), log("")
 {
-
+    shader_vert.init();
+    shader_frag.init();
+    shader_geo.init();
+    shader_tc.init();
+    shader_eva.init();
+    shader_comp.init();
 }
 
 OpenGLShaderProgram::~OpenGLShaderProgram()

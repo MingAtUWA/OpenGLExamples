@@ -80,15 +80,26 @@ unset(ASSSIMP_LIBRARIES_IRRXML CACHE)
 unset(ASSSIMP_LIBRARIES_ZLIBSTATIC CACHE)
 
 
-
 ################ Example projects ###############
 # Common
+# depend on
+#   glad (in external folder)
+#   glfw (in external folder)
 add_subdirectory(Common/)
 
 # ImGUIApp
+# depend on
+#   ImGUI
 add_subdirectory(ImGUIApp/)
 
+# TestTexture
+#   stb_image
+add_subdirectory(TestTexture/)
+
 # LoadObjFile
+# depend on
+#   Assimp (in external folder)
+#   stb_image
 add_subdirectory(LoadObjFile/)
 
 # Display ttf character

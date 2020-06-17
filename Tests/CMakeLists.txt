@@ -8,6 +8,7 @@ add_executable(
     #
     TestsMain.h TestsMain.cpp
     test_imgui.cpp
+    test_texture.cpp
     test_load_obj_model.cpp
     )
 
@@ -17,6 +18,7 @@ target_include_directories(
     ${COMMON_INCLUDE_DIR}
     ${DISPLAYTTF_INCLUDE_DIR}
     ${IMGUIAPP_INCLUDE_DIR}
+    ${TESTTEXTURE_INCLUDE_DIR}
     ${LOADOBJFILE_INCLUDE_DIR}
     # External
     ${OPENGL_INCLUDE_DIR}
@@ -26,9 +28,10 @@ target_link_libraries(
     Tests
     # Internal
     Common
-    DisplayTtf
     ImGUIApp
+    TestTexture
     LoadObjFile
+    DisplayTtf
     # External
     ${GLFW_LIBRARIES}
     )
