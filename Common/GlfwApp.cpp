@@ -43,6 +43,15 @@ GlfwApp::~GlfwApp()
 
 int GlfwApp::init_app()
 {
+    if (!glfwInit())
+    {
+        std::cout << "Glfw can't initialize.\n";
+        return -1;
+    }
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    
     window = glfwCreateWindow(
                 width, height,
                 win_name.c_str(), 
@@ -66,6 +75,12 @@ int GlfwApp::init_app()
     // mouse scroll callback
     glfwSetScrollCallback(window, glfw_mouse_scroll_callback);
 
+    if (!gladLoadGL())
+    {
+        std::cout << "Glad can't load GL functions.\n";
+        return -1;
+    }
+    
     // init data
     return init();
 }

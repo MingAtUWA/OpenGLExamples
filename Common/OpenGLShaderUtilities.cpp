@@ -47,17 +47,11 @@ const GLenum OpenGLShader::type_gl_macros[] =
 const size_t OpenGLShader::type_num
     = sizeof(OpenGLShader::type_names) / sizeof(OpenGLShader::type_names[0]);
 
-OpenGLShader::OpenGLShader(ShaderType _type) :
-    type(_type), shader_id(0), compiled_already(false), log("")
+OpenGLShader::OpenGLShader() :
+    type(Invalid), shader_id(0),
+    compiled_already(false), log("")
 {
-    if (type >= type_num)
-    {
-        std::cout << "OpenGLShader: Unsupported shader type.\n";
-        return;
-    }
-    shader_id = glCreateShader(type_gl_macros[type]);
-    if (!shader_id)
-        std::cout << "OpenGLShader: Can't create shader.\n";
+
 }
 
 OpenGLShader::~OpenGLShader()
@@ -90,14 +84,9 @@ void OpenGLShader::get_code(std::string& code) const
     code = "";
 }
 
+
 bool OpenGLShader::compile(const char* code)
 {
-    if (!shader_id)
-    {
-        std::cout << "OpenGLShader: Shader hasn't been created.\n";
-        return false;
-    }
-
     if (code && strlen(code))
     {
         glShaderSource(shader_id, 1, &code, nullptr);
@@ -125,8 +114,11 @@ bool OpenGLShader::compile(const char* code)
     return false; // not valide code
 }
 
-bool OpenGLShader::compile_code(const char* code)
+bool OpenGLShader::compile_code(const char* code, ShaderType type)
 {
+    if (!create(type))
+        return false;
+
     compile(code);
     if (!compiled_already)
     {
@@ -140,8 +132,11 @@ bool OpenGLShader::compile_code(const char* code)
     return false;
 }
 
-bool OpenGLShader::compile_file(const char* filename)
+bool OpenGLShader::compile_file(const char* filename, ShaderType type)
 {
+    if (!create(type))
+        return false;
+    
     if (filename && strlen(filename))
     {
         std::fstream file(filename, std::ios::in | std::ios::binary);
@@ -164,9 +159,10 @@ bool OpenGLShader::compile_file(const char* filename)
                 << filename
                 << "\nProblematic shader code:\n"
                 << &code_buffer[0] << "\n";
+            return false;
         }
     }
-    return false;
+    return true;
 }
 
 
@@ -174,24 +170,7 @@ bool OpenGLShader::compile_file(const char* filename)
 OpenGLShaderProgram::OpenGLShaderProgram():
     program_id(0), linked_already(false), log("")
 {
-    program_id = glCreateProgram();
-    if (!program_id)
-        std::cout << "OpenGLShaderProgram: Cannot create shader program.\n";
 
-    shader_vert.init();
-    shader_frag.init();
-    shader_geo.init();
-    shader_tc.init();
-    shader_eva.init();
-    shader_comp.init();
-}
-
-OpenGLShaderProgram::OpenGLShaderProgram(
-    const char* shd_vert_filename,
-    const char* shd_frag_filename
-) : OpenGLShaderProgram()
-{
-    init(shd_vert_filename, shd_frag_filename);
 }
 
 OpenGLShaderProgram::~OpenGLShaderProgram()
@@ -204,26 +183,28 @@ OpenGLShaderProgram::~OpenGLShaderProgram()
     del_all_shaders();
 }
 
-bool OpenGLShaderProgram::init(
+bool OpenGLShaderProgram::create(
     const char* shd_vert_filename,
     const char* shd_frag_filename
     )
 {
-    return add_shader_from_file(ShaderType::Vertex, shd_vert_filename)
-        && add_shader_from_file(ShaderType::Fragment, shd_frag_filename)
-        && link();
+    bool res_create = create();
+    bool res_shader1 = add_shader_from_file(ShaderType::Vertex, shd_vert_filename);
+    bool res_shader2 = add_shader_from_file(ShaderType::Fragment, shd_frag_filename);
+    bool res_link = link();
+    return res_create && res_shader1 && res_shader2 && res_link;
 }
 
 bool OpenGLShaderProgram::add_shader(OpenGLShader &shader)
 {
     ShaderType stype = shader.get_type();
-    if (stype >= OpenGLShader::type_num)
+    if (stype < 0 || stype >= OpenGLShader::type_num)
     {
         std::cout << "OpenGLShaderprogram: Unsupported shader type.\n";
         return false;
     }
 
-    ShaderPointer& sptr = shader_ptr[stype];
+    ShaderPointer &sptr = shader_ptr[stype];
     sptr.clear();
     sptr.shader = &shader;
     sptr.is_internal = false;
@@ -232,14 +213,8 @@ bool OpenGLShaderProgram::add_shader(OpenGLShader &shader)
 
 bool OpenGLShaderProgram::add_shader_from_code(ShaderType type, const char* code)
 {
-    if (!program_id)
-    {
-        std::cout << "OpenGLShaderprogram: Program hasn't been created.\n";
-        return false;
-    }
-
-    OpenGLShader* shader = new OpenGLShader(type);
-    if (!shader->compile_code(code))
+    OpenGLShader* shader = new OpenGLShader;
+    if (!shader->compile_code(code, type))
     {
         log = shader->get_log();
         delete shader;
@@ -258,14 +233,8 @@ bool OpenGLShaderProgram::add_shader_from_file(
     const char* filename
     )
 {
-    if (!program_id)
-    {
-        std::cout << "OpenGLShaderprogram: Program hasn't been created.\n";
-        return false;
-    }
-
-    OpenGLShader* shader = new OpenGLShader(type);
-    if (!shader->compile_file(filename))
+    OpenGLShader* shader = new OpenGLShader;
+    if (!shader->compile_file(filename, type))
     {
         log = shader->get_log();
         delete shader;
@@ -281,11 +250,8 @@ bool OpenGLShaderProgram::add_shader_from_file(
 
 bool OpenGLShaderProgram::link()
 {
-    if (!program_id)
-    {
-        std::cout << "OpenGLShaderprogram: Program hasn't been created.\n";
+    if (!create())
         return false;
-    }
 
     if (shader_vert.is_valid())
         glAttachShader(program_id, shader_vert.get_id());

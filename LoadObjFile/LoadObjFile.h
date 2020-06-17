@@ -7,6 +7,8 @@
 
 #include "GlfwApp.h"
 
+// not successful currelty 
+// maybe the problem of textures (in frag shader?)
 class LoadObjFile : public GlfwApp
 {
 protected:

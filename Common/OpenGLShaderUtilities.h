@@ -37,6 +37,7 @@ class OpenGLShader
 public:
     enum ShaderType
     {
+        Invalid = -1,
         Vertex = 0,
         Fragment = 1,
         Geometry = 2,
@@ -56,7 +57,7 @@ protected:
     std::string log;
 
 public:
-    explicit OpenGLShader(ShaderType _type);
+    explicit OpenGLShader();
     ~OpenGLShader();
 
     ShaderType get_type() const { return type; }
@@ -69,17 +70,32 @@ public:
     inline const std::string get_log() const { return log; }
     void get_code(std::string& code) const;
     
-    bool compile_code(const char* code);
-    inline bool OpenGLShader::compile_code(const std::string& code)
+    inline bool create(ShaderType _type)
     {
-        return compile_code(code.c_str());
+        if (shader_id)
+            return true;
+        type = _type;
+        if (type < 0 || type >= type_num)
+        {
+            std::cout << "OpenGLShader: Unsupported shader type.\n";
+            return false;
+        }
+        shader_id = glCreateShader(type_gl_macros[type]);
+        if (!shader_id)
+        {
+            std::cout << "OpenGLShader: Can't create shader.\n";
+            return false;
+        }
+        return true;
     }
 
-    bool compile_file(const char *filename);
-    inline bool compile_file(const std::string& filename)
-    {
-        return compile_file(filename.c_str());
-    }
+    bool compile_code(const char* code, ShaderType type);
+    inline bool OpenGLShader::compile_code(const std::string& code, ShaderType type)
+    { return compile_code(code.c_str(), type); }
+
+    bool compile_file(const char *filename, ShaderType type);
+    inline bool compile_file(const std::string& filename, ShaderType type)
+    { return compile_file(filename.c_str(), type); }
 
 protected: // compile and set log (if fails)
     bool compile(const char* code);
@@ -140,13 +156,31 @@ public:
     typedef OpenGLShader::ShaderType ShaderType;
 
     explicit OpenGLShaderProgram();
-    OpenGLShaderProgram(const char *shd_vert_filename,
-                        const char *shd_frag_filename);
     ~OpenGLShaderProgram();
 
-    // directly initialize vertex and fragment shaders from files
-    bool init(const char* shd_vert_filename,
-              const char* shd_frag_filename);
+    inline bool create()
+    {
+        if (program_id)
+            return true;
+
+        program_id = glCreateProgram();
+        if (!program_id)
+        {
+            std::cout << "OpenGLShaderProgram: Cannot create shader program.\n";
+            return false;
+        }
+
+        shader_vert.init();
+        shader_frag.init();
+        shader_geo.init();
+        shader_tc.init();
+        shader_eva.init();
+        shader_comp.init();
+        return true;
+    }
+    // Initialize vertex and fragment shaders from files
+    bool create(const char* shd_vert_filename,
+                const char* shd_frag_filename);
 
     inline GLuint get_id() const { return program_id; }
     inline bool is_linked() const { return linked_already; };

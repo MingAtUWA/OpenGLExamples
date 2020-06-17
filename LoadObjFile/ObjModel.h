@@ -2,6 +2,7 @@
 #define __Obj_Model_h__
 
 #include <string>
+#include <unordered_map>
 
 #include <glad/glad.h> 
 #include <glm/glm.hpp>
@@ -16,26 +17,21 @@
 #include "OpenGLShaderUtilities.h"
 #include "MeshGLBuffer.h"
 
-GLuint load_texture_from_file(
-	const char* path,
-	const std::string& directory,
-	bool gamma = false);
-
 class ObjModel
 {
 protected:
-    std::vector<Texture> textures_loaded;
     std::vector<MeshGLBuffer> meshes;
+    // Assume textures locates in the same directories as obj file
     std::string directory;
-    bool gamma_correction;
+
+    // map texture filename to id
+    std::unordered_map<std::string, GLuint> textures_map;
 
 public:
-    ObjModel() : gamma_correction(false) {}
-    ~ObjModel() {}
+    ObjModel() {}
+    ~ObjModel();
 
-    // loads a model with supported ASSIMP extensions from file
-    // stores resulting meshes in the meshes vector.
-    void load_model(const std::string& path, bool gamma = false);
+    void load_model(const char *model_filename);
 
     void draw(OpenGLShaderProgram &shader)
     {
@@ -43,15 +39,17 @@ public:
             meshes[m_id].draw(shader);
     }
 
+    // for debug
+    void print_info();
+
 protected:
-    // processes each individual mesh recursively.
+    // processes each mesh node recursively.
     void process_node(aiNode* node, const aiScene* scene);
 
-    MeshGLBuffer process_mesh(aiMesh* mesh, const aiScene* scene);
-
-    // checks all material textures of a given type and loads the textures if they're not loaded yet.
-    // the required info is returned as a Texture struct.
-    std::vector<Texture> load_material_textures(aiMaterial* mat, aiTextureType type, const char *typeName);
+    void process_mesh(aiMesh* mesh, const aiScene* scene, MeshGLBuffer &buffer);
+    void load_material_textures(aiMaterial* mat,
+        aiTextureType type, const char *typeName,
+        std::vector<Texture>& textures);
 };
 
 #endif

@@ -26,10 +26,11 @@ int LoadObjFile::init()
     glEnable(GL_DEPTH_TEST);
     glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 
-    shader.init("../../Shaders/load_obj_file.vert",
-                "../../Shaders/load_obj_file.frag");
+    shader.create("../../Shaders/load_obj_file.vert",
+                  "../../Shaders/load_obj_file.frag");
 
-    model.load_model("../../Shaders/backpack.obj");
+    model.load_model("../../Assets/backpack/backpack.obj");
+    model.print_info();
 
     return 0;
 }
@@ -77,7 +78,6 @@ void LoadObjFile::mouse_move(double xpos, double ypos)
     }
 
     float xoffset = xpos - last_xpos;
-    // reversed since y-coordinates go from bottom to top
     float yoffset = last_ypos - ypos;
 
     last_xpos = xpos;

@@ -10,28 +10,6 @@
 class GlfwApp
 {
 protected:
-	class EnvInitializer
-	{
-	public:
-		EnvInitializer()
-		{
-			if (!glfwInit())
-			{
-				std::cout << "Glfw can't initialize.\n";
-				return;
-			}
-			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-			glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-		
-			if (!gladLoadGL())
-			{
-				std::cout << "Glad can't load GL functions.\n";
-				return;
-			}
-		}
-	} env_initializer;
-
 	std::string win_name;
 	int width, height;
 	GLFWwindow* window;
