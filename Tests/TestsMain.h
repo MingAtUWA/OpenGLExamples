@@ -8,5 +8,6 @@
 int test_imgui(int argc, char** argv);
 int test_load_obj_model(int argc, char** argv);
 int test_texture(int argc, char** argv);
+int test_display_ttf(int argc, char** argv);
 
 #endif

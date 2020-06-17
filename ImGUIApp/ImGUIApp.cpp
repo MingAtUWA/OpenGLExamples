@@ -79,7 +79,7 @@ int ImGUIApp::paint()
 	return 0;
 }
 
-void ImGUIApp::destory()
+void ImGUIApp::destroy()
 {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();

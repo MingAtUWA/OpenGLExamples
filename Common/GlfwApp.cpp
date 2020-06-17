@@ -87,7 +87,7 @@ int GlfwApp::init_app()
 
 void GlfwApp::destroy_app()
 {
-    destory();
+    destroy();
 
     if (window)
     {

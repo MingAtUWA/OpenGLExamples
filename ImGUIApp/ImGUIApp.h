@@ -17,7 +17,7 @@ protected:
 public:
 	int init() override;
 	int paint() override;
-	void destory() override;
+	void destroy() override;
 };
 
 #endif

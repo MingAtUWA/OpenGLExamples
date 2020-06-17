@@ -10,6 +10,7 @@ add_executable(
     test_imgui.cpp
     test_texture.cpp
     test_load_obj_model.cpp
+    test_display_ttf.cpp
     )
 
 target_include_directories(

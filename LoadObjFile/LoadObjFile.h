@@ -25,7 +25,7 @@ public:
 
 	int init() override;
 	int paint() override;
-	void destory() override;
+	void destroy() override;
 	int resize(int wd, int ht) override;
 	void mouse_move(double xpos, double ypos) override;
 	void process_keyboard_input() override;

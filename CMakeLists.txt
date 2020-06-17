@@ -19,6 +19,7 @@ find_library(GLFW_LIBRARIES
     NAMES glfw3
     PATHS ${GLFW_LIBRARIES_DIR}
     )
+unset(GLFW_LIBRARIES_DIR CACHE)
 # glm
 set(GLM_INCLUDE_DIR "${VENDORS_DIR}/glm/")
 # OpenGL
@@ -79,6 +80,22 @@ unset(ASSSIMP_LIBRARIES_ASSIMP CACHE)
 unset(ASSSIMP_LIBRARIES_IRRXML CACHE)
 unset(ASSSIMP_LIBRARIES_ZLIBSTATIC CACHE)
 
+# free type
+set(FREETYPE_INCLUDE_DIR "${VENDORS_DIR}/freetype/include/freetype2") # must to freetype2 dir
+# debug
+set(FREETYPE_DEBUG_LIBRARIES_DIR "${VENDORS_DIR}/freetype/lib_debug")
+find_library(FREETYPE_DEBUG_LIBRARIES
+    NAMES freetyped
+    PATHS ${FREETYPE_DEBUG_LIBRARIES_DIR}
+    )
+unset(FREETYPE_DEBUG_LIBRARIES_DIR CACHE)
+# release
+set(FREETYPE_RELEASE_LIBRARIES_DIR "${VENDORS_DIR}/freetype/lib")
+find_library(FREETYPE_RELEASE_LIBRARIES
+    NAMES freetype
+    PATHS ${FREETYPE_RELEASE_LIBRARIES_DIR}
+    )
+unset(FREETYPE_RELEASE_LIBRARIES_DIR CACHE)
 
 ################ Example projects ###############
 # Common
@@ -103,6 +120,7 @@ add_subdirectory(TestTexture/)
 add_subdirectory(LoadObjFile/)
 
 # Display ttf character
+#   freetype
 add_subdirectory(DisplayTtf/)
 
 # Tests

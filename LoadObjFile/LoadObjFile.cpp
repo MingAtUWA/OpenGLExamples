@@ -57,7 +57,7 @@ int LoadObjFile::paint()
     return 0;
 }
 
-void LoadObjFile::destory()
+void LoadObjFile::destroy()
 {
 
 }

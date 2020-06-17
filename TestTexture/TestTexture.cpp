@@ -156,7 +156,7 @@ int TestTexture::paint()
     return 0;
 }
 
-void TestTexture::destory()
+void TestTexture::destroy()
 {
     if (ebo)
     {

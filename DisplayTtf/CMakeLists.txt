@@ -17,4 +17,11 @@ target_include_directories(
     ${COMMON_INCLUDE_DIR}
     # External
     ${OPENGL_INCLUDE_DIR}
+    ${FREETYPE_INCLUDE_DIR}
+    )
+
+target_link_libraries(
+    DisplayTtf PUBLIC
+    debug ${FREETYPE_DEBUG_LIBRARIES}
+    optimized ${FREETYPE_RELEASE_LIBRARIES}
     )

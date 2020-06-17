@@ -30,7 +30,7 @@ public:
 	// function written by user
 	virtual int init() = 0;
 	virtual int paint() = 0;
-	virtual void destory() = 0;
+	virtual void destroy() = 0;
 	virtual int resize(int wd, int ht);
 	virtual void error(int id, const char* description);
 	virtual void mouse_move(double xpos, double ypos);
