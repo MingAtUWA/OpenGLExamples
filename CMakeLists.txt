@@ -123,5 +123,8 @@ add_subdirectory(LoadObjFile/)
 #   freetype
 add_subdirectory(DisplayTtf/)
 
+# Random points generation with possion
+add_subdirectory(PoissonDiskSampling/)
+
 # Tests
 add_subdirectory(Tests/)

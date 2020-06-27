@@ -11,6 +11,8 @@ add_executable(
     test_texture.cpp
     test_load_obj_model.cpp
     test_display_ttf.cpp
+    test_pds_result_view.cpp
+    test_random_point_queue.cpp
     )
 
 target_include_directories(
@@ -21,6 +23,7 @@ target_include_directories(
     ${IMGUIAPP_INCLUDE_DIR}
     ${TESTTEXTURE_INCLUDE_DIR}
     ${LOADOBJFILE_INCLUDE_DIR}
+    ${POISSONDISKSAMPLING_INCLUDE_DIR}
     # External
     ${OPENGL_INCLUDE_DIR}
     )
@@ -33,6 +36,7 @@ target_link_libraries(
     TestTexture
     LoadObjFile
     DisplayTtf
+    PoissonDiskSampling
     # External
     ${GLFW_LIBRARIES}
     )
